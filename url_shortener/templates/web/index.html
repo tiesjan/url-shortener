@@ -1,0 +1,45 @@
+{% extends "web/base.html" %}
+
+
+{% block page_contents %}
+<form method="POST" action="/" novalidate>
+    {{ form.csrf_token }}
+
+    <div class="my-4">
+        <div class="input-group input-group-lg my-2">
+            {{ form.target_url(class_="form-control" + (" is-invalid" if form.target_url.errors else ""), placeholder=form.target_url.label.text) }}
+            <input class="btn btn-primary" type="submit" value="Shorten!">
+        </div>
+
+        {% if form.errors %}
+        <div class="mx-3 my-2 small text-danger">
+            {% if form.target_url.errors %}
+                {% for error in form.target_url.errors %}<p class="my-1">{{ error }}</p>{% endfor %}
+            {% elif form.csrf_token.errors %}
+                <p>Something went wrong while creating your short URL. Please try again.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="form-check mx-3 my-2">
+            {{ form.public(class="form-check-input") }}
+            {{ form.public.label(class="form-check-label") }}
+        </div>
+    </div>
+</form>
+
+{% if short_urls %}
+<div class="mt-5">
+    <h3 class="mx-2 text-black-50">Last 10 URLs</h3>
+    <table class="table table-borderless table-hover text-black-50">
+        {% for short_url in short_urls %}
+        <tr>
+            <td><a href="{{ url_for('web.url_preview', slug=short_url.slug) }}"><span class="text-black-50">{{ request.host }}</span><strong>/{{ short_url.slug }}</strong></a></td>
+            <td>{{ short_url.target_url }}</td>
+            <td class="text-nowrap">{{ short_url.visit_count }} visit{{ short_url.visit_count|pluralize }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+{% endblock %}
