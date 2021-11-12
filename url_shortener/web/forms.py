@@ -2,8 +2,7 @@ from ipaddress import ip_address
 from urllib.parse import urlsplit
 
 from flask_wtf import FlaskForm
-from wtforms.fields import BooleanField
-from wtforms.fields.html5 import URLField
+from wtforms.fields import BooleanField, URLField
 from wtforms.validators import DataRequired, URL, ValidationError
 
 from url_shortener.web.form_filters import prepend_http, strip_value

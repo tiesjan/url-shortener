@@ -1,5 +1,5 @@
 from werkzeug.datastructures import MultiDict
-from wtforms.fields.html5 import URLField
+from wtforms.fields import URLField
 
 from url_shortener.web.forms import BaseFlaskForm, ShortURLForm
 from url_shortener.web.form_filters import prepend_http, strip_value
