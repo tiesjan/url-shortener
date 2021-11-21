@@ -3,7 +3,7 @@ import os
 from flask import Flask
 from werkzeug.exceptions import HTTPException
 
-from url_shortener.models import db, migrate
+from url_shortener.database import db, migrate
 from url_shortener.template_filters import pluralize
 from url_shortener.web import blueprint as web_blueprint
 from url_shortener.web.views import handle_http_exception
@@ -43,7 +43,7 @@ def create_app():
         SQLALCHEMY_TRACK_MODIFICATIONS=False,  # for Flask-Alchemy pre-3.x
     )
 
-    # Initialize DB
+    # Initialize database
     with app.app_context():
         db.init_app(app)
         migrate.init_app(app, db)

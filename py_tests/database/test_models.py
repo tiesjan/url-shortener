@@ -1,4 +1,4 @@
-from url_shortener.models import ShortURL
+from url_shortener.database.models import ShortURL
 
 
 def test_shorturl_repr():

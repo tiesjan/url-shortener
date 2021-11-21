@@ -5,7 +5,8 @@ from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 
 from url_shortener.core import generate_slug
-from url_shortener.models import ShortURL, db
+from url_shortener.database import db
+from url_shortener.database.models import ShortURL
 from url_shortener.web.forms import ShortURLForm
 
 

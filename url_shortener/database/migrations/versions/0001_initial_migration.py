@@ -9,6 +9,8 @@ Create Date: 2021-10-19 20:14:59.350979
 from alembic import op
 import sqlalchemy as sa
 
+from url_shortener.database.functions import utc_now
+
 
 # revision identifiers, used by Alembic.
 revision = '4defdf508e78'
@@ -25,7 +27,7 @@ def upgrade():
         sa.Column('target_url', sa.String(length=500), nullable=False),
         sa.Column('public', sa.Boolean(), nullable=False),
         sa.Column('visit_count', sa.Integer(), server_default=sa.text('0'), nullable=False),
-        sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+        sa.Column('created_at', sa.DateTime(), server_default=utc_now(), nullable=False),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('slug')
     )

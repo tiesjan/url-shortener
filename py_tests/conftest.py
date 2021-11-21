@@ -3,7 +3,7 @@ from flask_migrate import upgrade
 import pytest
 
 from url_shortener.app import create_app
-from url_shortener.models import db
+from url_shortener.database import db
 
 
 @pytest.fixture(scope='session')
@@ -15,7 +15,7 @@ def app():
 def db_init_schema(app):
     # Apply database migrations before session starts
     with app.app_context():
-        upgrade(directory='url_shortener/migrations/')
+        upgrade(directory='url_shortener/database/migrations/')
 
     yield
 
