@@ -13,19 +13,19 @@ def test_get_configuration(monkeypatch):
         'SQLALCHEMY_DATABASE_URI': 'sqlite://',
         'SQLALCHEMY_ECHO': False,
         'TESTING': False,
-        'WTF_CSRF_ENABLED': False,
+        'WTF_CSRF_ENABLED': True,
     }
 
     # All environment variables set
     monkeypatch.setenv('SQLALCHEMY_DATABASE_URI', 'sqlite:////tmp/app.db')
     monkeypatch.setenv('SQLALCHEMY_ECHO', 'True')
     monkeypatch.setenv('FLASK_TESTING', 'True')
-    monkeypatch.setenv('WTF_CSRF_ENABLED', 'True')
+    monkeypatch.setenv('WTF_CSRF_ENABLED', 'False')
     assert get_configuration() == {
         'SQLALCHEMY_DATABASE_URI': 'sqlite:////tmp/app.db',
         'SQLALCHEMY_ECHO': True,
         'TESTING': True,
-        'WTF_CSRF_ENABLED': True,
+        'WTF_CSRF_ENABLED': False,
     }
 
 

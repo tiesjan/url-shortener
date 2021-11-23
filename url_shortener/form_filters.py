@@ -7,7 +7,7 @@ def prepend_http(value):
 
 
 def strip_value(value):
-    if value is not None and hasattr(value, 'strip'):
+    if value is not None:
         return value.strip()
     else:
         return value

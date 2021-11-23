@@ -1,4 +1,4 @@
-from url_shortener.web.form_filters import prepend_http, strip_value
+from url_shortener.form_filters import prepend_http, strip_value
 
 
 def test_prepend_http():
@@ -13,5 +13,4 @@ def test_strip_value():
     assert strip_value('   example ') == 'example'
     assert strip_value('example') == 'example'
     assert strip_value('') == ''
-    assert strip_value([1, 2, 3]) == [1, 2, 3]
     assert strip_value(None) is None

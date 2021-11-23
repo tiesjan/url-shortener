@@ -22,7 +22,7 @@ def get_configuration():
             os.environ.get('FLASK_TESTING', 'False') == 'True'
         ),
         'WTF_CSRF_ENABLED': (
-            os.environ.get('WTF_CSRF_ENABLED', 'False') == 'True'
+            os.environ.get('WTF_CSRF_ENABLED', 'True') == 'True'
         ),
     }
 

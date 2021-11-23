@@ -3,29 +3,22 @@ from urllib.parse import urlsplit
 
 from flask_wtf import FlaskForm
 from wtforms.fields import BooleanField, URLField
-from wtforms.validators import DataRequired, URL, ValidationError
+from wtforms.validators import DataRequired, Optional, URL, ValidationError
 
-from url_shortener.web.form_filters import prepend_http, strip_value
-
-
-class BaseFlaskForm(FlaskForm):
-    class Meta:
-        def bind_field(self, form, unbound_field, options):
-            filters = unbound_field.kwargs.get('filters', [])
-            if strip_value not in filters:
-                filters.insert(0, strip_value)
-            return unbound_field.bind(form=form, filters=filters, **options)
+from url_shortener.form_filters import prepend_http, strip_value
 
 
-class ShortURLForm(BaseFlaskForm):
+class ShortURLForm(FlaskForm):
     target_url = URLField(
         'Target URL',
-        filters=[prepend_http],
-        validators=[DataRequired(), URL()]
+        filters=[strip_value, prepend_http],
+        validators=[DataRequired(), URL()],
     )
     public = BooleanField(
         'Make short URL public',
         default=True,
+        filters=[],
+        validators=[Optional()],
     )
 
     def validate_target_url(self, field):
