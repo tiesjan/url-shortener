@@ -2,23 +2,11 @@ from datetime import datetime, timedelta
 
 from flask import request, url_for
 from werkzeug.datastructures import MultiDict
-from werkzeug.exceptions import NotFound
 
-from url_shortener.core import generate_slug
 from url_shortener.database import db
 from url_shortener.database.models import ShortURL
-from url_shortener.web.forms import ShortURLForm
-
-
-def test_handle_http_exception(app, client, rendered_templates):
-    response = client.get(url_for('web.url_preview', slug='not-found'))
-    assert response.status_code == 404
-    assert response.mimetype == 'text/html'
-    assert len(rendered_templates) == 1
-    template, context = rendered_templates[0]
-    assert template.name == 'web/exception.html'
-    assert 'exception' in context
-    assert isinstance(context['exception'], NotFound)
+from url_shortener.short_urls.forms import ShortURLForm
+from url_shortener.short_urls.slugs import generate_slug
 
 
 def test_index_retrieve(app, client, rendered_templates):
@@ -41,16 +29,16 @@ def test_index_retrieve(app, client, rendered_templates):
     db.session.commit()
 
     # Perform request and assert response
-    response = client.get(url_for('web.index'))
+    response = client.get(url_for('short_urls.index'))
     assert response.status_code == 200
     assert response.mimetype == 'text/html'
     assert len(rendered_templates) == 1
     template, context = rendered_templates[0]
-    assert template.name == 'web/index.html'
+    assert template.name == 'short_urls/index.html'
     assert 'form' in context
     assert isinstance(context['form'], ShortURLForm)
-    assert 'short_urls' in context
-    assert context['short_urls'] == [
+    assert 'latest_short_urls' in context
+    assert context['latest_short_urls'] == [
         (short_url2.slug, short_url2.target_url, short_url2.visit_count),
         (short_url1.slug, short_url1.target_url, short_url1.visit_count),
     ]
@@ -79,10 +67,10 @@ def test_index_create(app, client, monkeypatch, rendered_templates):
     request_data = MultiDict(
         {'target_url': 'http://www2.example.com/', 'public': ''}
     )
-    response = client.post(url_for('web.index'), data=request_data)
+    response = client.post(url_for('short_urls.index'), data=request_data)
     assert response.status_code == 302
     assert response.location == '{}://{}{}'.format(
-        request.scheme, request.host, url_for('web.url_preview', slug='Ef3Gh4')
+        request.scheme, request.host, url_for('short_urls.url_preview', slug='Ef3Gh4')
     )
     short_urls = db.session.query(ShortURL).order_by('id').all()
     assert len(short_urls) == 2
@@ -102,12 +90,12 @@ def test_url_preview(app, client, rendered_templates):
     db.session.commit()
 
     # Perform request and assert response
-    response = client.get(url_for('web.url_preview', slug=short_url.slug))
+    response = client.get(url_for('short_urls.url_preview', slug=short_url.slug))
     assert response.status_code == 200
     assert response.mimetype == 'text/html'
     assert len(rendered_templates) == 1
     template, context = rendered_templates[0]
-    assert template.name == 'web/url_preview.html'
+    assert template.name == 'short_urls/url_preview.html'
     assert 'short_url' in context
     assert context['short_url'] == short_url
 
@@ -120,13 +108,13 @@ def test_url_redirect(app, client):
     db.session.commit()
 
     # Perform request and assert response/state
-    response = client.get(url_for('web.url_redirect', slug=short_url.slug))
+    response = client.get(url_for('short_urls.url_redirect', slug=short_url.slug))
     assert response.status_code == 302
     assert response.location == short_url.target_url
     assert short_url.visit_count == 1
 
     # Perform request again and assert response/state
-    response = client.get(url_for('web.url_redirect', slug=short_url.slug))
+    response = client.get(url_for('short_urls.url_redirect', slug=short_url.slug))
     assert response.status_code == 302
     assert response.location == short_url.target_url
     assert short_url.visit_count == 2

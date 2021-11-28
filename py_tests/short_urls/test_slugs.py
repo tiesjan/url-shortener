@@ -1,4 +1,4 @@
-from url_shortener.core import generate_slug
+from url_shortener.short_urls.slugs import generate_slug
 
 
 def test_generate_slug(monkeypatch):

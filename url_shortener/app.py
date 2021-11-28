@@ -1,12 +1,11 @@
 import os
 
-from flask import Flask
+from flask import Flask, render_template
 from werkzeug.exceptions import HTTPException
 
 from url_shortener.database import db, migrate
+from url_shortener.short_urls import blueprint as short_urls_blueprint
 from url_shortener.template_filters import pluralize
-from url_shortener.web import blueprint as web_blueprint
-from url_shortener.web.views import handle_http_exception
 
 
 def get_configuration():
@@ -27,12 +26,11 @@ def get_configuration():
     }
 
 
-def handle_routing_http_exception(exception):
-    """
-    Handles HTTP exceptions for "404 Not Found" and "405 Method Not Allowed"
-    occurring while routing requests to corresponding views
-    """
-    return handle_http_exception(exception)
+def handle_http_exception(exception):
+    return (
+        render_template('exception.html', exception=exception),
+        exception.code
+    )
 
 
 def create_app():
@@ -51,10 +49,10 @@ def create_app():
     # Register custom template filters
     app.add_template_filter(pluralize)
 
-    # Register web interface
-    app.register_blueprint(web_blueprint, url_prefix='/')
+    # Register blueprints
+    app.register_blueprint(short_urls_blueprint, url_prefix='/')
 
-    # Register HTTP exception handler for routing
-    app.register_error_handler(HTTPException, handle_routing_http_exception)
+    # Register HTTP exception handler
+    app.register_error_handler(HTTPException, handle_http_exception)
 
     return app

@@ -1,8 +1,8 @@
-{% extends "web/base.html" %}
+{% extends "base.html" %}
 
 
 {% block page_contents %}
-<form method="POST" action="/" novalidate>
+<form method="POST" action="{{ url_for('short_urls.index') }}" novalidate>
     {{ form.csrf_token }}
 
     <div class="my-4">
@@ -28,13 +28,13 @@
     </div>
 </form>
 
-{% if short_urls %}
+{% if latest_short_urls %}
 <div class="mt-5">
     <h3 class="mx-2 text-black-50">Last 10 URLs</h3>
     <table class="table table-borderless table-hover text-black-50">
-        {% for short_url in short_urls %}
+        {% for short_url in latest_short_urls %}
         <tr>
-            <td><a href="{{ url_for('web.url_preview', slug=short_url.slug) }}"><span class="text-black-50">{{ request.host }}</span><strong>/{{ short_url.slug }}</strong></a></td>
+            <td><a href="{{ url_for('short_urls.url_preview', slug=short_url.slug) }}"><span class="text-black-50">{{ request.host }}</span><strong>/{{ short_url.slug }}</strong></a></td>
             <td>{{ short_url.target_url }}</td>
             <td class="text-nowrap">{{ short_url.visit_count }} visit{{ short_url.visit_count|pluralize }}</td>
         </tr>

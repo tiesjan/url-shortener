@@ -1,6 +1,6 @@
 from werkzeug.datastructures import MultiDict
 
-from url_shortener.web.forms import ShortURLForm
+from url_shortener.short_urls.forms import ShortURLForm
 
 
 def test_shorturl_form_validate_target_url(app):

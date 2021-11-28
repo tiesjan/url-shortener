@@ -1,16 +1,9 @@
 from flask import redirect, render_template, url_for
 
-from url_shortener.core import generate_slug
 from url_shortener.database import db
 from url_shortener.database.models import ShortURL
-from url_shortener.web.forms import ShortURLForm
-
-
-def handle_http_exception(exception):
-    return (
-        render_template('web/exception.html', exception=exception),
-        exception.code
-    )
+from url_shortener.short_urls.forms import ShortURLForm
+from url_shortener.short_urls.slugs import generate_slug
 
 
 def index():
@@ -27,18 +20,19 @@ def index():
                 break
 
         # Redirect to url preview view
-        return redirect(url_for('web.url_preview', slug=slug))
+        return redirect(url_for('short_urls.url_preview', slug=slug))
 
-    # Render form with a list of all short URLs
-    short_urls = db.session.query(
+    # Render form with a list of latest short URLs
+    latest_short_urls = db.session.query(
         ShortURL.slug, ShortURL.target_url, ShortURL.visit_count
     ).filter_by(public=True).order_by(ShortURL.created_at.desc()).limit(10).all()
-    return render_template('web/index.html', form=form, short_urls=short_urls)
+    return render_template(
+            'short_urls/index.html', form=form, latest_short_urls=latest_short_urls)
 
 
 def url_preview(slug):
     short_url = db.session.query(ShortURL).filter_by(slug=slug).first_or_404()
-    return render_template('web/url_preview.html', short_url=short_url)
+    return render_template('short_urls/url_preview.html', short_url=short_url)
 
 
 def url_redirect(slug):

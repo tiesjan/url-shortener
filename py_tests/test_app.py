@@ -1,3 +1,4 @@
+from flask import url_for
 from werkzeug.exceptions import NotFound
 
 from url_shortener.app import get_configuration
@@ -29,12 +30,12 @@ def test_get_configuration(monkeypatch):
     }
 
 
-def test_handle_routing_http_exception(app, client, rendered_templates):
-    response = client.get('/route/not/found/')
+def test_handle_http_exception(app, client, rendered_templates):
+    response = client.get(url_for('short_urls.url_preview', slug='not-found'))
     assert response.status_code == 404
     assert response.mimetype == 'text/html'
     assert len(rendered_templates) == 1
     template, context = rendered_templates[0]
-    assert template.name == 'web/exception.html'
+    assert template.name == 'exception.html'
     assert 'exception' in context
     assert isinstance(context['exception'], NotFound)
