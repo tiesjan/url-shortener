@@ -3,7 +3,7 @@ from urllib.parse import urlsplit
 
 from flask_wtf import FlaskForm
 from wtforms.fields import BooleanField, URLField
-from wtforms.validators import DataRequired, Optional, URL, ValidationError
+from wtforms.validators import InputRequired, Optional, URL, ValidationError
 
 from url_shortener.form_filters import prepend_http, strip_value
 
@@ -12,7 +12,7 @@ class ShortURLForm(FlaskForm):
     target_url = URLField(
         'Target URL',
         filters=[strip_value, prepend_http],
-        validators=[DataRequired(), URL()],
+        validators=[InputRequired(), URL()],
     )
     public = BooleanField(
         'Make short URL public',
