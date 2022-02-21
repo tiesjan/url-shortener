@@ -10,17 +10,18 @@ def index():
     form = ShortURLForm()
     if form.validate_on_submit():
         # Generate unique slug and store in database
+        short_url = ShortURL()
         while True:
             slug = generate_slug(length=6)
             if db.session.query(ShortURL.id).filter_by(slug=slug).first() is None:
-                short_url = ShortURL(slug=slug)
                 form.populate_obj(short_url)
+                short_url.slug = slug
                 db.session.add(short_url)
                 db.session.commit()
                 break
 
         # Redirect to url preview view
-        return redirect(url_for('short_urls.url_preview', slug=slug))
+        return redirect(url_for('short_urls.url_preview', slug=short_url.slug))
 
     # Render form with a list of latest short URLs
     latest_short_urls = db.session.query(
@@ -38,12 +39,9 @@ def url_preview(slug):
 def url_redirect(slug):
     short_url = db.session.query(ShortURL).filter_by(slug=slug).first_or_404()
 
-    # Grab target URL
-    target_url = short_url.target_url
-
     # Increment visit count
     short_url.visit_count = ShortURL.visit_count + 1
     db.session.commit()
 
     # Redirect to target URL
-    return redirect(target_url)
+    return redirect(short_url.target_url)

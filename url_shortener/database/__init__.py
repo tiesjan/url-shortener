@@ -1,6 +1,8 @@
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy.model import BindMetaMixin, Model
 from sqlalchemy import MetaData
+from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 
 
 naming_convention = {
@@ -13,7 +15,20 @@ naming_convention = {
 metadata = MetaData(naming_convention=naming_convention)
 
 
-db = SQLAlchemy(metadata=metadata)
+class SimpleMeta(BindMetaMixin, DeclarativeMeta):
+    pass
+
+
+session_options = {
+    'expire_on_commit': False
+}
+
+
+db = SQLAlchemy(
+    metadata=metadata,
+    model_class=declarative_base(cls=Model, metaclass=SimpleMeta, name='Model'),
+    session_options=session_options
+)
 
 
 migrate = Migrate()

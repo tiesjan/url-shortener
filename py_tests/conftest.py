@@ -21,13 +21,17 @@ def db_init_schema(app):
 
 
 @pytest.fixture(scope='function', autouse=True)
-def db_clear_tables():
-    yield
+def db_clear_tables(request):
+    def clear_tables():
+        # Rollback current transaction
+        db.session.rollback()
 
-    # Clear table data after each test
-    for table in reversed(db.metadata.sorted_tables):
-        db.session.execute(table.delete())
-    db.session.commit()
+        # Clear all table data
+        for table in reversed(db.metadata.sorted_tables):
+            db.session.execute(table.delete())
+        db.session.commit()
+
+    request.addfinalizer(clear_tables)
 
 
 @pytest.fixture

@@ -3,6 +3,8 @@ from url_shortener.database.functions import utc_now
 
 
 class ShortURL(db.Model):
+    __tablename__ = 'short_url'
+
     id = db.Column(db.Integer, primary_key=True)
     slug = db.Column(db.String(50), nullable=False, unique=True)
     target_url = db.Column(db.String(500), nullable=False)

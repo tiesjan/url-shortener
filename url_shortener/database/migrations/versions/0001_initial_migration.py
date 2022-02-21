@@ -20,8 +20,9 @@ depends_on = None
 
 
 def upgrade():
+    # Create ShortURL table
     op.create_table(
-        'shortURL',
+        'short_url',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('slug', sa.String(length=50), nullable=False),
         sa.Column('target_url', sa.String(length=500), nullable=False),
@@ -34,4 +35,7 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_table('shortURL')
+    # Drop ShortURL table
+    op.drop_table(
+        'short_url'
+    )
