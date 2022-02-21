@@ -6,7 +6,7 @@ from url_shortener.app import create_app
 from url_shortener.database import db
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='session', autouse=True)
 def app():
     yield create_app()
 

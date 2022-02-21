@@ -9,7 +9,7 @@ from url_shortener.short_urls.forms import ShortURLForm
 from url_shortener.short_urls.slugs import generate_slug
 
 
-def test_index_retrieve(app, client, rendered_templates):
+def test_index_retrieve(client, rendered_templates):
     # Create 2 public and 1 private ShortURL instances
     short_url1 = ShortURL(
         slug=generate_slug(), target_url='http://www1.example.com/',
@@ -44,7 +44,7 @@ def test_index_retrieve(app, client, rendered_templates):
     ]
 
 
-def test_index_create(app, client, monkeypatch, rendered_templates):
+def test_index_create(client, monkeypatch, rendered_templates):
     # Create a ShortURL instance
     short_url = ShortURL(
         slug='Ab1Cd2', target_url='http://www1.example.com/',
@@ -64,9 +64,9 @@ def test_index_create(app, client, monkeypatch, rendered_templates):
     monkeypatch.setattr('random.SystemRandom.choice', generate_value)
 
     # Perform request and assert response/state
-    request_data = MultiDict(
-        {'target_url': 'http://www2.example.com/', 'public': ''}
-    )
+    request_data = MultiDict({
+        'target_url': 'http://www2.example.com/', 'public': ''
+    })
     response = client.post(url_for('short_urls.index'), data=request_data)
     assert response.status_code == 302
     assert response.location == '{}://{}{}'.format(
@@ -82,7 +82,7 @@ def test_index_create(app, client, monkeypatch, rendered_templates):
     assert short_urls[1].public is False
 
 
-def test_url_preview(app, client, rendered_templates):
+def test_url_preview(client, rendered_templates):
     # Create ShortURL instance
     short_url = ShortURL(
             slug=generate_slug(), target_url='http://example.com/', public=True)
@@ -100,7 +100,7 @@ def test_url_preview(app, client, rendered_templates):
     assert context['short_url'] == short_url
 
 
-def test_url_redirect(app, client):
+def test_url_redirect(client):
     # Create ShortURL instance
     short_url = ShortURL(
             slug=generate_slug(), target_url='http://example.com/', public=True)
